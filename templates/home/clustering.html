@@ -1,0 +1,125 @@
+{% extends 'home/welcome.html' %}
+{% load static %}
+{% block page_name %} Tableau de bord {% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div style="  border-left-style: solid; border-width: 2px; border-color: #34495e">
+            <h4 style="padding-left: 4px"> Clusters des accidents routiers en Algérie</h4>
+        </div>
+    <div class="row">
+    <div class="col-lg-8">
+        <div style="border-style: groove;" >
+
+                    {{my_map|safe}}
+        </div>
+
+
+    </div>
+    <div class="col-lg-4">
+         <div class="card border-info mb-0" style="width: 100%;">
+            <div class="card-header bg-transparent text-info">
+                <h5>Les paramètres de DBSCAN</h5></div>
+            <div class="card-body text-dark">
+
+                <center>
+{#                <h6>Valeurs par défaut</h6>#}
+{#                    <form >#}
+{#                 <fieldset disabled>#}
+{#                     <div class="row">#}
+{#                 <div class="form-group mx-sm-2 mb-2 col ">#}
+{#                     <label>Epsilon</label>#}
+{#                     <input  class="form-control form-control-sm"  placeholder="" value="0.02">#}
+{#                 </div>#}
+{#                 <div class="form-group mx-sm-2 mb-2 col">#}
+{#                     <label>MinPts</label>#}
+{#                    <input  class="form-control form-control-sm"  placeholder="" value="4">#}
+{#                 </div>#}
+{#                     </div>#}
+{#                 </fieldset>#}
+{#        </form>#}
+                    <h6>Les performances obtenues</h6>
+             <form class="">
+                 <fieldset disabled>
+                 <div class="row">
+                 <div class="form-group mx-sm-2 mb-2 col">
+                     <label >Coeff de Silhouette</label>
+                     <input  size="10" class="form-control form-control-sm" id="silhouette" placeholder="" value={{ silhouette }}>
+                 </div>
+                 <div class="form-group mx-sm-2 mb-0 col">
+                     <label title="Indice Calinski-Harabasz: Un score de Calinski-Harabasz plus élevé se rapporte à un modèle avec des clusters mieux définies" data-toggle="popover" data-trigger="hover" >Indice CH</label>
+                    <input  class="form-control form-control-sm" id="harabasz" placeholder="" value={{ inxch }}>
+                 </div>
+                 </div>
+                  <div class="row">
+                  <div class="form-group mx-sm-2 mb-2 col">
+                     <p >Nombre de clusters</p>
+                     <input  size="10" class="form-control form-control-sm" id="silhouette" placeholder="" value={{ nbr_clusters }}>
+                 </div>
+                  <div class="form-group mx-sm-2 mb-2 col">
+                     <p >Bruits</p>
+                     <input  size="10" class="form-control form-control-sm" id="silhouette" placeholder="" value={{ outliers }}>
+                 </div>
+                 </div> </fieldset>
+        </form>
+
+            <h6 style=" padding-top: 10px">Changer les paramètres</h6>
+
+                    <form action="/clustering/" method="post" >
+                        {% csrf_token %}
+                         {{ formClus.as_p }}
+                        <br>
+                        <button type="submit" class="btn btn-primary" style="float: right;">Valider</button>
+                    </form>
+
+                </center>
+  </div>
+    </div>
+</div>
+    </div>
+        <br>
+        <div class="card border-dark mb-0" style="width: 100%;">
+            <div class="card-header bg-transparent text-dark">
+                <h4>La méthode DBSCAN</h4>
+            </div>
+            <div class="card-body text-dark">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <p style="font-size: 15px">
+                            <b> Density-based spatial clustering of applications with noise</b> <br>
+                            DBSCAN est une méthode de partitionnement des données basée sur la densité. Son but est le regroupement des données en différents groupes homogènes, tels que les
+                            points du même groupe doivent être les plus semblables possible et les données de groupes différents doivent être les plus différentes possible.
+                            <br>Elle utilise principalement
+                            deux paramètres: Epsilon et minPts. Epsilon est le rayon de voisinage à considérer lors de la création des clusters, et minPts et le nombre minimal de points qui doivent exister
+                            dans un rayon Epsilon pour que ces points soient considérés comme un cluster.</p>
+                            <b style="font-size: 15px">Ses avanteges:</b>
+                            <ul style="font-size: 15px">
+                                <li> Son efficacité face aux grands volumes de données.</li>
+                                <li> Sa robustesse et prise en charge des points aberrants.</li>
+                                <li> Le nombre de clusters n'est pas prédéfini, mais découvert à la fin de l'opération.</li>
+                                <li> Les deux paramètres peuvent être spécifiés par un expert du domaine</li>
+                            </ul>
+
+                    </div>
+                    <div class="col-lg-5">
+                        <center>
+                        <img src="{% static 'img/dbscan1.gif' %}"  style="width: 100%" alt="">
+                        <p style="font-size: 16px"> Description du fonctionnement de DBSCAN</p>
+                            </center>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+     <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+});
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,281 @@
+{% load static %}
+<style>
+.hide {
+  display: none;
+}
+
+.myDIV:hover + .hide {
+  display: block;
+  color: red;
+}
+</style>
+<div class="row" style="width: 100%">
+            <div class="col-lg-6">
+                <div class="card border-info mb-3" style="margin:20px; width: 100%">
+                 <div class="card-header bg-transparent border-info">
+                     <h5>Paramétrer le modèle</h5>
+                 </div>
+                    <div class="card-body">
+                        <div style="float: right">
+            <form class="form" action="" method="post" style="" >
+{#            <form class="form-inline" action="" method="post" style="" >#}
+                {% csrf_token %}
+                <p style="color: #2e6da4; font-size: 16px">-Intervalle de temps</p>
+                <div class=input-group" style="display: flex;  justify-content: center;">
+
+                    <label style="margin-right: 6px" for="pred-debutPred"> Du </label>
+                     {{ myfilter.debutPred}}
+                    <label style="margin-right: 6px" for="pred-finPred"> Au </label>
+                    {{ myfilter.finPred}}
+{#                    <input type="date", min='2014-01-01', max= '2014-03-30', value='2014-01-01', id="debut", name="debutPred">#}
+                </div><br>
+                <p style="color: #2e6da4; font-size: 16px">-Attributs</p>
+                <div class="row ">
+
+                <div class="input-check">
+                    <label  for="pred-wilaya"> Wilaya </label>
+                     <input type="checkbox" name="attributs" value="wilaya" >
+                </div>
+                <div class="input-check">
+                     <label  for="pred-latitude"> Latitude </label>
+{#                     {{ myfilter.latitude}}#}
+                    <input type="checkbox" name="attributs" value="latitude">
+                </div>
+                     <div class="input-check">
+
+                     <label for="pred-longitude"> Longitude </label>
+                         <input type="checkbox" name="attributs" value="longitude">
+{#                     {{ myfilter.longitude}}#}
+                     </div>
+
+                       <div class="input-check">
+                    <label  for="pred-age"> Type de route </label>
+                         <input type="checkbox" name="attributs" value="type_route">
+{#                     {{ myfilter.age}}#}
+                     </div>
+                     <div class="input-check">
+
+                     <label  for="pred-date"> Date </label>
+{#                     {{ myfilter.date}}#}
+                         <input type="checkbox" name="attributs" value="date">
+                     </div>
+                     <div class="input-check">
+                     <label for="pred-jour"> Jour </label>
+                         <input type="checkbox" name="attributs" value="jour">
+{#                     {{ myfilter.jour}}#}
+                     </div>
+                     <div class="input-check">
+                     <label for="pred-mois"> Mois </label>
+                         <input type="checkbox" name="attributs" value="mois">
+{#                     {{ myfilter.mois}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-heure"> Heure </label>
+                         <input type="checkbox" name="attributs" value="heure">
+{#                     {{ myfilter.heure}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-cause"> Cause d'accident </label>
+                         <input type="checkbox" name="attributs" value="cause_acc">
+{#                     {{ myfilter.cause}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-cause"> Nombre de décès </label>
+                         <input type="checkbox" name="attributs" value="nbre_dec">
+{#                     {{ myfilter.cause}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-cause"> Nombre de blessés </label>
+                         <input type="checkbox" name="attributs" value="nbre_bless">
+{#                     {{ myfilter.cause}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-date_naiss"> Date de naissance du chauffeur</label>
+                         <input type="checkbox" name="attributs" value="date_naiss_chauff">
+{#                     {{ myfilter.date_naiss}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Age du chauffeur </label>
+                         <input type="checkbox" name="attributs" value="age_chauff">
+{#                     {{ myfilter.age}}#}
+                     </div>
+                    <div class="input-check">
+                    <label  for="pred-age"> Année d'obtention du permis </label>
+                         <input type="checkbox" name="attributs" value="annee_permis">
+{#                     {{ myfilter.age}}#}
+                     </div>
+
+                     <div class="input-check">
+                    <label  for="pred-age"> Catégorie du véhicule </label>
+                         <input type="checkbox" name="attributs" value="cat_veh">
+{#                     {{ myfilter.age}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Temprérature </label>
+                         <input type="checkbox" name="attributs" value="temperature">
+{#                     {{ myfilter.temperature}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Précipitations </label>
+                         <input type="checkbox" name="attributs" value="precipitation">
+{#                     {{ myfilter.precipitation}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Vitesse du vent </label>
+                         <input type="checkbox" name="attributs" value="vitessevent">
+{#                     {{ myfilter.vitesse_vent}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Temprérature du vent </label>
+                         <input type="checkbox" name="attributs" value="tempvent">
+{#                     {{ myfilter.temp_vent}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Humidité </label>
+                         <input type="checkbox" name="attributs" value="humidite">
+{#                     {{ myfilter.humidite}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Visibilité</label>
+                         <input type="checkbox" name="attributs" value="visibilite">
+{#                     {{ myfilter.visibilite}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Couverture nuageuse </label>
+                         <input type="checkbox" name="attributs" value="couverturenuage">
+{#                     {{ myfilter.couv_nuage}}#}
+                     </div>
+                     <div class="input-check">
+                    <label  for="pred-age"> Neige </label>
+                         <input type="checkbox" name="attributs" value="neige">
+{#                     {{ myfilter.couv_nuage}}#}
+                     </div>
+{#                    <input type="date", min='2014-01-02', max= '2014-03-30', value='2014-03-31', id="fin", name="finPred">#}
+                </div>
+{#                {{ myfilter }}#}
+                <div>
+                     <button type="submit" class="btn btn-dark" name="train" style="float: right; width: auto; font-size: 13px; margin-left: 10px">Lancer l'entrainement</button>
+
+                </div>
+
+
+            </form>
+        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-info mb-3" style="margin:20px; width: 100%">
+                    <div class="card-header bg-transparent border-info">
+                     <h5>Performances obtenues</h5>
+
+
+                 </div>
+                    <div class="card-body">
+                         <form class="" method="post">
+                             {% csrf_token %}
+                             {{ saveP }}
+                 <fieldset disabled>
+                 <div class="row">
+                 <div class="form-group mx-sm-2 mb-2 col">
+                    <label class="myDIV">
+                         Exactitude</label>
+                         <span class="hide">
+                             Elle mesure la fraction de prédictions correctes. La plage est comprise entre 0 et 1. Plus
+la valeur est grande, meilleure est la précision prédictive
+                         </span>
+
+                     <input  size="10" class="form-control form-control-sm" id="acc" placeholder="" value={{ acc }}>
+                 </div>
+                 <div class="form-group mx-sm-2 mb-0 col">
+                     <label  class="myDIV" >Précision</label>
+                     <span class="hide">
+                         Elle est égale au rapport du nombre de prédictions réussies sur le nombre total de pré-
+dictions.
+
+                     </span>
+                    <input  class="form-control form-control-sm" id="precision" placeholder="" value={{ precision }}>
+                 </div>
+                 </div>
+                  <div class="row">
+                  <div class="form-group mx-sm-2 mb-2 col">
+                     <label class="myDIV">Rappel</label>
+                      <span class="hide">
+                          Mesure la fraction de positifs observés qui sont prédits comme positifs.
+La plage est comprise entre 0 et 1
+                      </span>
+                     <input  size="10" class="form-control form-control-sm" id="recall" placeholder="" value={{ recall }}>
+                 </div>
+                  <div class="form-group mx-sm-2 mb-2 col">
+                     <label class="myDIV" >F1-Score</label>
+                      <span class="hide">
+                          Elle prend en compte à la fois la précision et le rappel. Il s’agit de la moyenne harmonique
+de ces deux métriques.
+                      </span>
+                     <input  size="10" class="form-control form-control-sm" id="f1score" placeholder="" value={{ f1score }}>
+                 </div>
+                 </div>
+                     <div class="row">
+                         <div class="form-group mx-sm-2 mb-2 col-lg-6">
+                     <label class="myDIV">AUC-ROC</label>
+                             <span class="hide">
+                                 Area Under the Received Operating Characteristic Curves
+                             </span>
+                     <input  size="10" class="form-control form-control-sm" id="aucroc" placeholder="" value={{ roc }}>
+                 </div>
+                     </div>
+
+                 </fieldset>
+                             <br>
+                             <div>
+                     <button type="submit" class="btn btn-warning" style="float: right; width: auto; font-size: 13px; margin-left: 10px" name="savePredictor">Sauvegarder le modèle</button>
+
+                </div>
+        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+<div class="card border-dark mb-0"  style="padding: 20px; margin: 10px" >
+            <b>  <h4>Les forêts aléatoires</h4></b><br>
+{#        <div class="row">#}
+
+{#            <div class="col-lg-6">#}
+                 <p style="font-size: 14px">
+                    L’idée générale derrière la méthode des forêts aléatoires est qu’au lieu d’essayer d’obtenir une méthode optimisée en une fois, plusieurs prédicteurs sont générés avant de mettre en
+                     commun leurs différentes prédictions. Elle se base sur l’application de l’approche arbre de décision sur plusieurs échantillons de données et permet d’obtenir des modèles prédictifs
+                     pour la classification et la régression. L’aspect aléatoire se présente dans le choix des tests de sélection dans le processus des arbres de décision.
+                     Les tests sont choisis aléatoirement dans chaque étape et dans chaque arbre ce qui rend la méthode robuste face au problème de surapprentissage.<br>
+
+                     La forêt est composée d’un ensemble d’arbres de décision où chaque arbre s’entraîne sur
+                     une fraction de données nommée a bootstrapped dataset. Pour construire ce dataset, des données sont tirées -avec remise- aléatoirement du dataset original (nous pouvons avoir la même
+                     donnée deux fois dans le dataset résultant). C’est le principe de Bootstrap. De plus, et afin que
+                     les arbres de notre forêt ne se ressemblent pas trop, un tirage aléatoire sans remise de m features,
+                     parmi M en entrée (m < M), est fait pour chaque noeud pour son découpage. Cette variable m
+                     est identique pour tous les arbres et les noeuds d’un même arbre, par contre les m variables
+                     impliquées dans deux nœuds distincts sont en général différentes. La collection d’arbres obtenus est enfin agrégée (moyenne en régression, vote majoritaire en classification) pour donner le
+                     prédicteur Random Forests.
+
+                </p>
+
+{#            </div>#}
+{#            <div class="col-lg-6">#}
+                 <img src="{% static 'img/RF.gif' %}"  style="width: 80%; border-style: solid; border-width: 1px; display: block;   margin-left: auto;  margin-right: auto;" alt="">
+
+{#            </div>#}
+{#        </div>#}
+            <br>
+
+
+
+
+
+
+
+
+    </div>

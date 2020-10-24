@@ -1,0 +1,263 @@
+{% extends 'home/welcome.html' %}
+{% block page_name %} Tableau de bord {% endblock %}
+{% load static %}
+{# <script src="https://code.jquery.com/jquery-3.3.1.js"></script>#}
+{#<script src="{% static 'js/code/modules/exporting.js' %}"></script>#}
+{#<script src="{% static 'js/code/modules/offline-exporting.js' %}"></script>#}
+{#<script src="{% static 'js/code/modules/export-data.js' %}"></script>#}
+{#<script src="{% static 'js/code/modules/accessibility.js' %}"></script>#}
+{#<script src="{% static 'css/bootstrap-4.5.0/bootstrap-4.5.0-dist/js/bootstrap.min.js' %}"></script>#}
+{#<script src="{% static 'css/bootstrap-4.5.0/bootstrap-4.5.0-dist/js/bootstrap.js' %}"></script>#}
+
+{#<script src="{% static 'js/jquery-3.5.1.js' %}"></script>#}
+
+{% block content %}
+
+    <style>
+table {
+  font-family: courier-new, courier, monospace, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+    font-family: courier-new, courier, monospace, sans-serif;
+  border: 1px solid #dddddd;
+  text-align: left;
+  height: 15px  ;
+  padding: 4px;
+}
+
+input[type=date]{
+    height: 30px;
+    {#display:inline;#}
+      }
+select{
+    height: 30px;
+    {#display:inline;#}
+      }
+
+input[type=checkbox]{
+     margin: 5px;
+     margin-right: 7px;
+     white-space:pre-line;
+    }
+    label{
+        font-size: 14px;
+        margin-left: 6px;
+    }
+    button{
+        height: 40px;
+    }
+
+</style>
+
+
+    <div class="container-fluid">
+     <div style="  border-left-style: solid; border-width: 2px; border-color: #34495e">
+            <h4 style="padding-left: 4px"> Prédiction de futures accidents routiers en Algérie</h4>
+        </div>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="predictions-tab" data-toggle="tab" href="#predictions" role="tab" aria-controls="home" aria-selected="true"><h5>Futures accidents</h5></a>
+        </li>
+        {% if request.user.is_staff %}
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="predictor-tab" data-toggle="tab" href="#predictor" role="tab" aria-controls="profile" aria-selected="false"><h5>Prédicteur</h5></a>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="predictions" role="tabpanel" aria-labelledby="predictions-tab"
+    style="border-bottom: solid; border-right:solid; border-left: solid; border-width: 1px; border-color: #c4dce8 ">
+       <br> <div class="row">
+            <div class="col-lg-7">
+            <div> <form class="form-inline" action="" method="post" style="float: right" >
+{#            <form class="form-inline" action="" method="post" style="" >#}
+                {% csrf_token %}
+                <select name="theModel">
+                    {% for l in list_pred %}
+                        <option> {{ l }} </option>
+                    {% endfor %}
+
+                </select>
+            {{ intervallePred }}
+                  <button type="submit" class="btn btn-warning" style="height:30px;float: right; width: auto; font-size: 13px; margin-left: 10px" name="predictors">Lancer la prédiction</button>
+             </form></div><br><br><br>
+{#                 <h5 style="border-left-style: groove; padding-left: 3px ">Réulatats du prédicteur "Forets aléatoires"</h5>#}
+                <div> <p style="float: right">Total: {{ total }} accidents prédits pour le {{ mars.date.1 }}</p>
+                <table id="predictionsTable" class="table table-bordered" style="padding-top: 20px; width: 100%; font-size: 12.5px; width: 100%"  >
+  <thead>
+    <tr class="table-warning">
+        <th>#</th>
+        <th>Wilaya</th>
+      <th >Latitude</th>
+      <th >Longitude</th>
+      <th>Date</th>
+      <th >Heure</th>
+      <th>Probabillité</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <font size="5">
+   {% for acc in mars.itertuples %}
+       <tr>
+           <td > {{acc.Index}}</td>
+       <td>{{ acc.wilaya }}</td>
+       <td>{{ acc.latitude|floatformat:4 }}</td>
+       <td>{{ acc.longitude|floatformat:4 }}</td>
+       <td>{{ acc.date }}</td>
+       <td>{{ acc.heure }}</td>
+       <td>{{ acc.proba_1|floatformat:4}}</td>
+       </tr>
+   {% endfor %}
+   </font>
+  </tbody>
+<tfoot>
+    <tr class="table-warning">
+        <th>#</th>
+        <th>Wilaya</th>
+      <th >Latitude</th>
+      <th >Longitude</th>
+      <th>Date</th>
+      <th >Heure</th>
+      <th>Probabillité</th>
+    </tr>
+  </tfoot>
+                </table>
+                </div></div>
+            <div class="col-lg-5">
+            <div style="border-style: groove; width: 100%; align-content: center">  {{my_map|safe}} </div><br>
+            </div>
+        </div>
+        <div style="padding-top: 20px">
+
+        </div>
+     </div>
+    {% if request.user.is_staff %}
+    <div class="tab-pane fade" id="predictor" role="tabpanel" aria-labelledby="predictor-tab" style="border-bottom: solid; border-right:solid; border-left: solid; border-width: 1px; border-color: #c4dce8 ">
+
+        {% include 'home/predictor.html' %}
+
+        <br></div>
+    {% endif %}
+</div> <br>
+    </div>
+    </div>
+    </div>
+
+<script>
+function humanize(x){
+  return x.toFixed(4).replace(/\.?0*$/,'');
+}
+
+
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+});
+
+
+Highcharts.chart('predictionchart', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Accidents prédits avec leur probabilité d\'occurrence',
+    },
+
+    xAxis: {
+        categories:[
+            {% for entry in mars %}{{ entry.date}} {% if not forloop.last %}, {% endif %}{% endfor %}
+
+        ],
+        title: {
+            text: 'Date'}
+    },
+
+    yAxis:{
+        title: {
+            text: 'Probabilité'}
+    },
+    legend: {
+        enabled: false,
+    },
+
+    series: [
+        {   color: '#c0392b',
+            data: [
+                {% for entry in mars %}{{ entry.proba_1}}{% if not forloop.last %}, {% endif %}{% endfor %}
+
+        ],
+             accessibility: {
+            exposeAsGroupOnly: true
+        },
+            }]
+});
+
+
+</script>
+<script>
+$(document).ready(function(){
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        localStorage.setItem('activeTab', $(e.target).attr('href'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab){
+        $('#myTab a[href="' + activeTab + '"]').tab('show');
+    }});
+{#$(function(){#}
+{#    var test = localStorage.input === 'true'? true: false;#}
+{#    $('input').prop('checked', test);});#}
+{##}
+{#$('input').on('change', function() {#}
+{#    localStorage.input = $(this).is(':checked');#}
+{#    console.log($(this).is(':checked'));});#}
+
+
+</script>
+
+
+<script>
+$('#myTab a').on('click', function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+
+$(document).ready( function () {
+    $('#predictionsTable').DataTable({
+        "processing": true,
+         dom: 'B<"clear">lfrtip',
+    buttons: {
+        name: 'primary',
+        buttons: [ 'csv', 'pdf' ]
+
+        },
+        "language": {
+                "url": "{% static 'js/DataTables/French.json' %}"
+            },
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+} );
+
+</script>
+{% endblock %}

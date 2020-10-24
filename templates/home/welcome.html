@@ -1,0 +1,230 @@
+{% load static %}
+<html lang="fr">
+<head>
+    <title>Accidetns Analyzer </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/Poppins/Poppins-Regular.ttf'%}">
+    <link rel="stylesheet" type="text/css" href="{% static 'js/DataTables/datatables.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-4.5.0/bootstrap-4.5.0-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-4.5.0/bootstrap-4.5.0-dist/js/bootstrap.js' %}">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <script src="{% static 'js/jquery-3.5.1.js' %}"></script>
+    <script src="{% static '/js/script.js' %}"></script>
+    <script src="{% static 'js/highcharts.src.js' %}"></script>
+<style>
+    .hello-msg{
+        font-size: 12px;
+        color: #ecf0f1;
+        padding-right: 30px;
+        float: bottom;
+        padding-top: 7px;
+        padding-left: 3px
+    }
+</style>
+
+</head>
+<body>
+<nav class="navbar sticky-top  navbar-dark navbar-expand-lg  bg-dark  p-0 shadow navbar-fixed-top " >
+    <a class="navbar-brand" href="/get-data/" >
+            <img src="{% static 'img/logo_RTA.png' %}"  class="d-inline-block align-center" alt=""height="40px">
+           Accidents Analyzer
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mr-auto" >
+          <li class="nav-item active">
+            <a class="nav-link" href="/get-data/" >
+              Tableau de bord
+               <span class="sr-only">(current)</span>
+            </a>
+          </li>
+        {% if request.user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link" href="/heatmap/" >
+              Heatmap
+            </a>
+          </li>
+        {% endif %}
+            <li class="nav-item">
+            <a class="nav-link" href="/clustering/">
+              Clustering BDSCAN
+            </a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/prediction/">
+              Prédictions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/bdd/">
+              Base De Données
+            </a>
+          </li>
+ {% if request.user.is_staff %}
+            <li class="nav-item">
+            <a class="nav-link" href="/admin/">
+              Administration
+            </a>
+        {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="/help/">
+              À propos
+            </a>
+          </li>
+
+
+       </ul>
+    </div>
+    <div class=" row " >
+        <img src="{% static 'img/user.png' %}" style="width: 25px; height: 25px">
+
+
+
+        <a  class="hello-msg" href="{% url 'profile' request.user.id %}">
+             {{ request.user }} </a>
+        <a class="hello-msg" href="{% url 'logout' %}">Se déconnecter</a>
+
+        </div>
+</nav>
+<div class="mycontainer">
+<main role="main" class="col">
+    <div id="main" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-0 mb-3 border-bottom">
+    <div class="row"><h3 style="margin-left: 15px">Les accidents routiers en Algérie </h3>
+{#        <p class="text-muted" style="margin-top: 10px; margin-left: 5px">Janvier-Mars 2014</p>#}
+    </div>
+
+              <p style="text-align:right; margin-bottom:0px; "> Date : <span id="datetime"> </span></p>
+    <script>var dt = new Date(); document.getElementById("datetime").innerHTML=dt.toLocaleString('en-GB');</script>
+
+        </div>
+
+
+{#<div id="cards" class="card-deck">#}
+{#            <div class="card border-info mb-3" style="max-width: 540px;">#}
+{#                <div class="row no-gutters">#}
+{#                    <div class="col-md-4">#}
+{#                        <img src="{% static 'img/acc.png' %}"  class="card-img" alt="">#}
+{##}
+{#                    </div>#}
+{#                    <div class="col-md-8">#}
+{#                        <div class="card-body">#}
+{#                            <p class="card-title">Nombre total d'accidents</p>#}
+{#                            <h2 class="card-text text-info">5602</h2>#}
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="card border-warning mb-3" style="max-width: 540px;">#}
+{#                <div class="row no-gutters">#}
+{#                    <div class="col-md-4">#}
+{#                         <img src="{% static 'img/bless.png' %}"  class="card-img" alt="">#}
+{#                    </div>#}
+{#                    <div class="col-md-8">#}
+{#                        <div class="card-body">#}
+{#                            <p class="card-title">Nombre total de blessés</p>#}
+{#                            <h2 class="card-text text-warning">5602</h2>#}
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="card border-danger mb-3" style="max-width: 540px;">#}
+{#                <div class="row no-gutters">#}
+{#                    <div class="col-md-4">#}
+{#                         <img src="{% static 'img/dec.png' %}"  class="card-img" alt="">#}
+{#                    </div>#}
+{#                    <div class="col-md-8">#}
+{#                        <div class="card-body">#}
+{#                            <p class="card-title">Nombre total de décés</p>#}
+{#                            <h2 class="card-text text-danger">5602</h2>#}
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="card border-success mb-3" style="max-width: 540px;">#}
+{#                <div class="row no-gutters">#}
+{#                    <div class="col-md-4">#}
+{#                        <img src="{% static 'img/evolution.png' %}"  class="card-img" alt="">#}
+{#                    </div>#}
+{#                    <div class="col-md-8">#}
+{#                        <div class="card-body">#}
+{#                            <p class="card-title">Evolution des accidents</p>#}
+{#                            <h2 class="card-text text-success">5602</h2>#}
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+
+{#<div class="card-deck">#}
+{#        <div class="card bg-transparent border-success mb-3" style="max-width: 540px;">#}
+{#            <div class="card-header bg-transparent border-success">#}
+{#                <h6>Nombre total d'accidents</h6>#}
+{#            </div>#}
+{#            <div class="card-body ">#}
+{#                <h3 class="card-title">5862</h3>#}
+{#                <p class="card-text">Janvier - Mars 2014</p>#}
+{#            </div>#}
+{##}
+{#        </div>#}
+{#        <div class="card bg-transparent border-warning mb-3" style="max-width: 540px;">#}
+{#            <div class="card-header bg-transparent border-warning">#}
+{#                <h6> Nombre total de blessés</h6></div>#}
+{#            <div class="card-body">#}
+{#                <h3 class="card-title text-warning">6025</h3>#}
+{#                <p class="card-text">Janvier - Mars 2014</p>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="card bg-transparent border-danger mb-3" style="max-width: 540px;">#}
+{#            <div class="card-header bg-transparent border-danger">Header</div>#}
+{#            <div class="card-body text-primary">#}
+{#                <h5 class="card-title">Primary card title</h5>#}
+{#                <p class="card-text">Some quick</p>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="card bg-transparent border-info mb-3" style="max-width: 540px;">#}
+{#            <div class="card-header bg-transparent border-info">Header</div>#}
+{#            <div class="card-body text-primary">#}
+{#                <h5 class="card-title">Primary card title</h5>#}
+{#                <p class="card-text">Some quick</p>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+    {% block content %}
+
+    {% endblock %}
+<div style="height: 40px"></div>
+</main>
+</div>
+
+
+<script>
+ $(document).ready(function() {
+  $('li.active').removeClass('active');
+  $('a[href="' + location.pathname + '"]').closest('li').addClass('active');
+});
+</script>
+
+
+{# <p style="float: right; position: relative; font-size: 11px">© 2020 </p>#}
+{#</div>#}
+
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>#}
+{#<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>#}
+{#<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.22/af-2.3.5/b-1.6.4/b-colvis-1.6.4/b-flash-1.6.4/b-html5-1.6.4/b-print-1.6.4/fh-3.1.7/kt-2.5.3/r-2.2.6/sc-2.0.3/sb-1.0.0/sp-1.2.0/sl-1.3.1/datatables.min.js"></script>#}
+
+
+ <script src="{% static 'css/bootstrap-4.5.0/bootstrap-4.5.0-dist/js/bootstrap.min.js' %}"></script>
+ <script src="{% static 'js/DataTables/datatables.min.js' %}"></script>
+
+{% block js %} {% endblock js %}
+<div class="footer">
+    <p > &copy; ESI - CRD-GN 2020</p>
+</div>
+</body>
+
+
+</html>

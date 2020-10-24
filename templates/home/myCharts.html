@@ -1,0 +1,806 @@
+{% extends 'home/welcome.html' %}
+{% load static %}
+{% block page_name %} Tableau de bord {% endblock %}
+
+{% block content %}
+
+<style>
+input[type=date]{
+  height: 30px;
+
+
+  }
+.maplegend .legend-title {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .maplegend .legend-scale ul {
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .maplegend .legend-scale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 0;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+  .maplegend ul.legend-labels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    margin-left: 0;
+    border: 1px solid #999;
+    }
+  .maplegend .legend-source {
+    font-size: 80%;
+    color: #777;
+    clear: both;
+    }
+  .maplegend a {
+    color: #777;
+    }
+.highcharts-figure, .highcharts-data-table table {
+    min-width: 200px;
+    max-width: 3200px;
+    {#max-height: 300px;#}
+    margin: 1em auto;
+    overflow: visible;
+    font-size: 10px;
+}
+
+.highcharts-container.highcharts-container{
+  z-index: auto !important;
+  overflow: visible!important;
+}
+.highcharts-contextmenu, highcharts-menu{
+    overflow: visible;
+    z-index: 120;
+
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 280px;
+    max-height: 250px;
+}
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+    padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+    padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+
+    background: #f1f7ff;
+}
+
+
+</style>
+<script src="{% static 'js/code/modules/exporting.js' %}"></script>
+<script src="{% static 'js/code/modules/offline-exporting.js' %}"></script>
+<script src="{% static 'js/code/modules/export-data.js' %}"></script>
+<script src="{% static 'js/code/modules/histogram-bellcurve.js' %}"></script>
+<script src="{% static 'js/code/modules/accessibility.js' %}"></script>
+<script src="{% static 'js/code/modules/full-screen.js' %}"></script>
+<script src="{% static 'js/code/modules/data.js' %}"></script>
+<script src="{% static 'js/code/modules/item-series.js' %}"></script>
+<script src="{% static 'js/code/modules/item-series.src.js' %}"></script>
+<script src="{% static 'js/code/modules/timeline.js' %}"></script>
+{#<script src="{% static 'js/code/themes/grid-light.js' %}"></script>#}
+{#  <div class="btn-toolbar mb-12 mb-md-1 "  >#}
+{#      <button id="exporter" type="button" class="btn btn-sm btn-outline-secondary" style=" margin-left: 95%;float: right">Exporter</button>#}
+{#  </div>#}
+
+{#    <div>#}
+{# <form action="/heatmap/" method="post" class="row" style="float: right">#}
+{#                        {% csrf_token %}#}
+{#                         {{ myfilter }}#}
+{#                        <br>#}
+{#                        <button type="submit" class="btn btn-light" style="float: right;">Valider</button>#}
+{#                    </form><br></div>#}
+<div style="float: right" >
+<form class="form-horizontal" action="" method="post" style="width: 100%; place-content: center;  grid-column-gap: 2%;" >
+        {% csrf_token %}{{ myfilter }}
+      <button type="submit" class="btn btn-dark" style="float: right; width: auto; font-size: 11px; margin-left: 10px">Soumettre</button>
+</form>
+</div>
+    <div class="container-fluid">
+
+<div id="cards" class="card-deck" style="height: 120px; width: 102%">
+
+            <div class="card border-info mb-3" style="max-width: 540px; height: 100%">
+                <div class="card-header bg-transparent border-info" >Nombre total d'accidents</div>
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="{% static 'img/acc.png' %}"  class="card-img img-responsive" style="left: 10%" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-text text-info" style="padding-left: 10px;">{{ accidents }}</h2>
+
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-dark mb-3" style="max-width: 540px;height: 100%">
+                <div class="card-header bg-transparent border-dark">Nombre total de blessés</div>
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                         <img src="{% static 'img/bless.png' %}"  class="card-img img-responsive" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-text text-dark">{{ bless }}</h2>
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-danger mb-3" style="max-width: 540px;height: 100%">
+                 <div class="card-header bg-transparent border-danger ">Nombre total de décés</div>
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                         <img src="{% static 'img/dec2.png' %}"  class="card-img img-responsive" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-text text-danger">{{ dec }}</h2>
+{#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-success mb-3" style="max-width: 540px; height: 100%">
+                <div class="card-header bg-transparent border-success ">Evolution des accidents</div>
+                <div class="row no-gutters">
+                    <div class="col-md-3">
+                        <img src="{% static 'img/evolution.png' %}"  class="card-img img-responsive"  style="left: 20%" alt="">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <h2 class="card-text text-success">{{ evolution}} %</h2>
+
+                            <p class="card-text" style="padding-left: 0px"><small class="text-muted">Les deux derniers mois </small></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card border-warning mb-3" style="max-width: 540px; height: 100%">
+
+                 <div class="card-header bg-transparent border-warning ">Accidents futurs</div>
+
+
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="{% static 'img/warning.svg' %}"  class="card-img img-responsive "  style="top:15%; left: 25%;height: 45px; width: 50px" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-text text-warning">64</h2>
+
+                            <p class="card-text"><small class="text-muted">Accidents prédits </small></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    <br>
+
+    <div class="row">
+
+        <div class="col-lg-8 col-md-12">
+
+           <div style="  border-left-style: solid; border-width: 2px; border-color: #34495e">
+               <h4 style="padding-left: 4px"> Distribution des accidents sur le territoire national</h4>
+           </div>
+            <div style="border-style: groove; width: 100%">
+
+                <div id='maplegend' class='maplegend'  style='position: absolute; z-index:9999; border:2px solid grey; background-color:rgba(255, 255, 255, 0.8);
+     border-radius:6px; padding: 5px; font-size:14px; margin: 10px; right: 30px; top: 80px;'>
+
+<div class='legend-scale' >
+  <ul class='legend-labels'>
+    <li><span style='background:#2ecc71;opacity:0.7;'></span>0-10</li>
+    <li><span style='background:#f1c40f;opacity:0.7;'></span>30-100</li>
+    <li><span style='background:#e67e22;opacity:0.7;'></span> >150 </li>
+  </ul>
+</div>
+</div>
+                {{my_map|safe}}
+            </div>
+            <div style="width: 100%;  margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+                 <figure class="highcharts-figure" style=" width:100%; ">
+                    <div id="accidentschart" style=" width: 100%;   " ></div>
+                 </figure>
+            </div>
+            <div style="width: 100%;  margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+                 <figure class="highcharts-figure" style=" width:100%; ">
+                    <div id="ageochart" style=" width: 100%;" ></div>
+                 </figure>
+            </div>
+            <div style="width: 100%;margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+                <figure class="highcharts-figure" style=" width:100%;" >
+                    <div id="hourpie" style=" width: 100%; "></div>
+                </figure>
+             </div>
+
+
+
+        </div>
+        <div class="col-lg-4">
+            <div class="row" style="grid-row-gap: 0px;">
+                <small style="color: transparent"> hey</small>
+                <div style="width: 100%;margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+
+                <figure class="highcharts-figure" style=" width: 100% ">
+                    <div id="causechart"  style=" width: 100%;  "></div>
+                </figure></div>
+                <div style="width: 100%; margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+
+            <figure class="highcharts-figure" style="width: 100%;">
+                <div id="catchart"  style=" width: 100%"></div>
+            </figure></div>
+                <div style="width: 100%; margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+
+            <figure class="highcharts-figure" style="width: 100%;">
+                <div id="routechart" style=" width: 100%;" ></div>
+            </figure></div>
+                <div style="width: 100%;margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+                     <figure class="highcharts-figure"  style="width: 100%;" >
+                              <div id="daybarchart" style="width: 100%;"></div>
+                    </figure>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+        <div class="col-lg-12 col-md-12">
+              <div style="width: 100%; margin-top:20px;margin-left:0px;border-style: solid; border-width: 1px; border-color: #34495e">
+            <figure class="highcharts-figure" style="margin-left: 0px; width: 100%">
+                <div id="wilayachart" style=" width: 100%; " ></div>
+            </figure></div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+{#Highcharts.setOptions(Highcharts.theme);#}
+Highcharts.chart('daybarchart', {
+
+    chart: {
+        type: 'column',
+        height: (12/ 16 * 100) + '%'
+    },
+
+    legend: {
+        enabled: false
+    },
+
+
+
+   title: {
+        text: 'Statistiques des dégâts humains par jour de semaine'
+    },
+
+
+    xAxis: {
+        title: {
+            text: ""
+        },
+        categories: [
+            {#'Dimanche', 'Lundi', "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"#}
+            {% for entry in daydata %}'{{ entry.jour}} '{% if not forloop.last %}, {% endif %}{% endfor %}
+          ]},
+
+    yAxis: {
+        min: 0,
+        title: {
+            text: ' '
+        }
+    },
+
+     plotOptions: {
+        bar: {
+            dataLabels: {
+                enabled: true
+            }
+        }
+    },
+    legend: {
+         layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top',
+        floating: true,
+        y: 37,
+        borderWidth: 1,
+        backgroundColor:
+            Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+        {#shadow: true#}
+    },
+    series: [{
+
+        name: 'Nombre de décés',
+
+        data: [
+            {% for entry in daydata %}{{ entry.dec_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+
+    }, {
+        name: 'Nombre de blessés',
+
+        data: [
+            {% for entry in daydata %}{{ entry.bless_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+    },
+        {
+        name: 'Nombre d\'accidents',
+        data: [
+            {% for entry in daydata %}{{ entry.accidents}}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+    },
+    ],
+      dataLabels: {
+            enabled: true,
+            rotation: -90,
+            color: '#FFFFFF',
+            align: 'right',
+            format: '{point.y:.1f}', // one decimal
+            y: 10, // 10 pixels down from the top
+            style: {
+                fontSize: '13px',
+                fontFamily: 'Verdana, sans-serif'
+            }
+        }
+
+});
+
+Highcharts.chart('wilayachart', {
+
+    chart: {
+        type: 'column',
+        {#inverted: true,#}
+    },
+
+    legend: {
+        enabled: false
+    },
+
+
+     title: {
+        text: 'Statistiques des dégâts humains par wilaya'
+    },
+    xAxis: {
+
+        categories: [
+            {% for entry in wilaya_data %}'{{ entry.wilaya}}'{% if not forloop.last %}, {% endif %}{% endfor %}
+          ]
+    },
+
+
+    yAxis: {
+
+        title:''
+    },
+
+     plotOptions: {
+        bar: {
+            dataLabels: {
+                enabled: true
+            }
+        }
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top',
+        x: 10,
+        y: 18,
+        floating: true,
+
+    },
+
+    series: [{
+
+        name: 'Nombre de décés',
+        {#color:'#34495e',#}
+        data: [
+            {% for entry in wilaya_data %}{{ entry.dec_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+
+    }, {
+        name: 'Nombre de blessés',
+        {#color:'#2980b9',#}
+        data: [
+            {% for entry in wilaya_data %}{{ entry.bless_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+    },
+        {
+        name: 'Nombre d\'accidents',
+        data: [
+            {% for entry in wilaya_data %}{{ entry.accidents }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+    },
+    ],
+});
+Highcharts.chart('catchart', {
+    chart: {
+        type: 'bar',
+         height: (8/ 16 * 100) + '%' // 16:9 ratio
+    },
+      legend: {
+        enabled: false
+    },
+
+    title: {
+        text: 'Catégories de véhicules impliqués '
+    },
+    xAxis: {
+        categories: [
+            {% for entry in catdata %}'{{ entry.cat_veh}}'{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+    },
+    yAxis: {
+        title: {
+            text: ''
+        }
+    },
+
+
+    plotOptions: {
+
+        bar: {
+            dataLabels: {
+                enabled: true
+            },
+            enableMouseTracking: true
+        }
+
+    },
+    series: [{
+        name: 'Catégorie de véhicule',
+        color:'#fa983a',
+        data: [
+            {% for entry in catdata %}{{ entry.cat_count}}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ]
+    }
+    ],
+    dataLabels: {
+            enabled: true,
+            rotation: -90,
+            color: '#FFFFFF',
+            align: 'right',
+            format: '{point.y:.1f}', // one decimal
+            y: 10, // 10 pixels down from the top
+            style: {
+                fontSize: '13px',
+                fontFamily: 'Verdana, sans-serif'
+            }
+        }
+});
+Highcharts.chart('causechart', {
+
+    chart: {
+        type: 'pie',
+        height: (14/ 16 * 100) + '%'
+    },
+
+    title: {
+        text: 'Les causes d\'accident les plus pertinentes'
+    },
+
+
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+     legend: {
+        {#enabled: false,#}
+
+        labelFormat: '{name} <span style="opacity: 0.4">{y}</span>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true
+            },
+            showInLegend: true
+        }
+    },
+
+    series: [{
+        name: 'Taux d\'occurence',
+        keys: ['name', 'y', 'label'],
+        data: [
+             {% for entry in causes %}
+            [name ='{{ entry.cause_acc }}',y={{ entry.cause }}, label='{{ entry.cause_acc }}']
+            {% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+        dataLabels: {
+            enabled: false,
+            format: '{point.label} '
+        },
+
+        // Circular options
+        center: ['50%', '88%'],
+        size: '150%',
+        startAngle: -100,
+        endAngle: 100
+    }]
+});
+Highcharts.chart('accidentschart', {
+
+    title: {
+        text: 'Evolution de l\'accidentalité '
+    },
+    chart:{
+        height: (6/ 16 * 100) + '%' // 16:9 ratio
+    },
+
+    xAxis: {
+        categories: [
+{#            {% for entry in accident %}'{{ entry.mois }}'{% endfor %}#}
+         {% for entry in accident %}'{{ entry.mois}} '{% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+        crosshair: true
+    },
+    yAxis: {
+        min: 0,
+        max: 6500,
+        title: {
+            text: ''
+        }
+    },
+    tooltip: {
+        headerFormat: '<span style="font-size:12px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color}; font-size:10px; padding:0">{series.name}: </td>' +
+            '<td style="padding:0; font-size:12px"><b>{point.y:.1f}</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+    },
+    plotOptions: {
+        column: {
+            pointPadding: 0.2,
+            borderWidth: 0
+        }
+    },
+    series: [{
+        type: 'column',
+        name: 'Nombre d\'accidents',
+        data: [
+             {% for entry in accident %}{{ entry.accidents}} {% if not forloop.last %}, {% endif %}{% endfor %}
+{#            {% for entry in accident %}'{{ entry.accident }}'{% if not forloop.last %}, {% endif %}{% endfor %}#}
+        ]
+
+    }, {
+        type: 'column',
+        name: 'Nombre de blessés',
+        data: [
+            {% for entry in accident %}{{ entry.bless_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+
+        ]
+
+    }, {
+        type: 'column',
+        name: 'Nombre de décés',
+        data: [
+            {% for entry in accident %}{{ entry.dec_count }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        ]
+
+    },
+    {
+        type: 'spline',
+        name: 'Evolution des accidents',
+        data: [
+
+            {% for entry in cum_acc %}
+              {{ entry.cum_acc}}
+            {% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+        marker: {
+            lineWidth: 2,
+            lineColor: Highcharts.getOptions().colors[3],
+            fillColor: 'white'
+        }
+    },
+    ]
+});
+Highcharts.chart('routechart', {
+
+    chart: {
+        type: 'pie',
+        height: (15/ 16 * 100) + '%'
+    },
+    title: {
+        text: 'Types de routes impliquées'
+    },
+   tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+     legend: {
+        {#enabled: false,#}
+
+        labelFormat: '{name} <span style="opacity: 0.4">{y:.2f}</span>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true
+            },
+            showInLegend: true
+        }
+    },
+    series: [{
+        name: 'Pourcentage',
+        data: [
+            {% for entry in routedata %}
+                  [name='{{ entry.type_route }}',y= {{ entry.route_count}}, label= '{{ entry.type_route }}']
+            {% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+        dataLabels: {
+            enabled: false,
+            format: '{point.label} '
+        },
+        center: ['50%', '88%'],
+        size: '170%',
+        startAngle: -100,
+        endAngle: 100
+    }],
+
+
+});
+Highcharts.chart('hourpie', {
+
+    title: {
+        text: 'Heures de pointe'
+    },
+    chart:{
+        height: (5 / 16 * 100) + '%' // 16:9 ratio
+    },
+    xAxis: {
+        categories:[
+          {% for entry in hourdata  %} '{{ entry.heure }}' {% if not forloop.last %}, {% endif %}{% endfor %}
+        ]
+    },
+    yAxis:{
+        title: {
+            text: 'Nombre d\'accidents'}
+    },
+    legend: {
+        enabled: false,
+    },
+
+    series: [
+        {   name: 'Nombre d\'accidents enregistrés',
+            color: '#e74c3c',
+            data: [
+              {% for entry in hourdata %}
+                  {{ entry.accidents }}
+            {% if not forloop.last %}, {% endif %}{% endfor %}
+        ],
+             accessibility: {
+            exposeAsGroupOnly: true
+        },
+            }]
+});
+Highcharts.chart('ageochart', {
+    chart:{ height: (5 / 16 * 100) + '%' // 16:9 ratio
+         },
+    title: {
+        text: 'Le nombre d\'accidents en fonction de l\'age du conducteur'
+    },
+
+    yAxis: {
+        title: {
+            text: 'Nombre d\'accidents'
+        },
+        resize: {
+            enabled: true
+        }
+    },
+
+    xAxis: {
+        title:{
+            text:"L\'age du cahuffeur"
+        },
+        categories:[
+            {% for entry in temperaturedata %}'{{ entry.age_chauff}} '{% if not forloop.last %}, {% endif %}{% endfor %}
+        ]
+    },
+
+    legend: {
+        enabled: false,
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle',
+        floating: true,
+    },
+
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+
+        }
+    },
+
+    series: [{
+        {#coulor: '#895355',#}
+        name: 'Nombre d\'accidents enregistrés',
+        data: [
+            {% for entry in temperaturedata %}{{ entry.accidents}}{% if not forloop.last %}, {% endif %}{% endfor %}
+            ]
+    },
+    {#    {#}
+    {#    name: 'Précipitations',#}
+    {#    data: [#}
+    {#        {% for entry in precipitationdata %}{{ entry.accidents}}{% if not forloop.last %}, {% endif %}{% endfor %}#}
+    {#    ]#}
+
+    ],
+
+    responsive: {
+        rules: [{
+            condition: {
+                {#maxWidth: 500#}
+            },
+            chartOptions: {
+                legend: {
+                    enabled: false,
+                }
+            }
+        }]
+    }
+
+});
+
+
+</script>
+{% endblock %}
