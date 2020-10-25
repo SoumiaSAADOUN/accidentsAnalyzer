@@ -71,21 +71,44 @@ input[type=checkbox]{
     <div class="tab-pane fade show active" id="predictions" role="tabpanel" aria-labelledby="predictions-tab"
     style="border-bottom: solid; border-right:solid; border-left: solid; border-width: 1px; border-color: #c4dce8 ">
        <br> <div class="row">
-            <div class="col-lg-7">
+            <div class="col-lg-7 ">
             <div> <form class="form-inline" action="" method="post" style="float: right" >
 {#            <form class="form-inline" action="" method="post" style="" >#}
                 {% csrf_token %}
                 <select name="theModel">
+                <option value="Sélectionner un model" selected="disabled hidden">Sélectionner un model</option>
                     {% for l in list_pred %}
                         <option> {{ l }} </option>
                     {% endfor %}
 
                 </select>
+
             {{ intervallePred }}
                   <button type="submit" class="btn btn-warning" style="height:30px;float: right; width: auto; font-size: 13px; margin-left: 10px" name="predictors">Lancer la prédiction</button>
-             </form></div><br><br><br>
+             </form></div><br><br>
 {#                 <h5 style="border-left-style: groove; padding-left: 3px ">Réulatats du prédicteur "Forets aléatoires"</h5>#}
-                <div> <p style="float: right">Total: {{ total }} accidents prédits pour le {{ mars.date.1 }}</p>
+{#                <div> <p style="float: right">Total: {{ total }} accidents prédits pour le {{ mars.date.1 }}</p>#}
+
+
+
+{#                 <div class="card-header bg-transparent border-warning ">Accidents futurs</div>#}
+{#   <div style="display: block; margin-left: auto; margin-right: auto">#}
+            <div class="card border-warning" style="width: 200px; display: flex; margin-left: auto; margin-right: auto">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="{% static 'img/warning.svg' %}"  class="card-img img-responsive "  style="top:25%; left: 25%;height: 45px; width: 50px" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h2 class="card-text text-warning">{{ predictions }}</h2>
+
+                            <p class="card-text"><small class="text-muted">Accidents prédits </small></p>
+
+                        </div>
+                    </div>
+                </div>
+            </div> <br><br>
+
                 <table id="predictionsTable" class="table table-bordered" style="padding-top: 20px; width: 100%; font-size: 12.5px; width: 100%"  >
   <thead>
     <tr class="table-warning">
@@ -126,7 +149,8 @@ input[type=checkbox]{
     </tr>
   </tfoot>
                 </table>
-                </div></div>
+                </div>
+
             <div class="col-lg-5">
             <div style="border-style: groove; width: 100%; align-content: center">  {{my_map|safe}} </div><br>
             </div>
@@ -258,6 +282,34 @@ $(document).ready( function () {
         }
     } );
 } );
+
+
+ $(document).ready(function(){
+   // Check or Uncheck All checkboxes
+   $("#checkall").change(function(){
+     var checked = $(this).is(':checked');
+     if(checked){
+       $(".checkbox").each(function(){
+         $(this).prop("checked",true);
+       });
+     }else{
+       $(".checkbox").each(function(){
+         $(this).prop("checked",false);
+       });
+     }
+   });
+
+  // Changing state of CheckAll checkbox
+  $(".checkbox").click(function(){
+
+    if($(".checkbox").length == $(".checkbox:checked").length) {
+      $("#checkall").prop("checked", true);
+    } else {
+      $("#checkall").removeAttr("checked");
+    }
+
+  });
+});
 
 </script>
 {% endblock %}

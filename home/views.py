@@ -310,7 +310,7 @@ def makePrediction (request):
     m.add_child(fullscreen)
     m.add_to(f)
     predictions=0
-    total= predictions
+    total= 0
     res= pd.DataFrame()
 
     if request.method== 'POST' and 'predictors' in request.POST:
@@ -327,6 +327,9 @@ def makePrediction (request):
         fin = request.POST.get('makePred-finPred')
         marsData = Accident.objects.filter(date__range=[debut, fin])
         marsData = marsData.values(*lines)
+
+        futurePred= pd.DataFrame(Accident.objects.values(*lines))[lines[1]].unique()
+        # print(futurePred)
 
         if 'heure' not in lines:
             lines.append('heure')

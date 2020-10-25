@@ -127,7 +127,7 @@ input[type=date]{
 </form>
 </div>
     <div class="container-fluid">
-
+<div style="width: 80%; display: flex; margin-left: auto; margin-right: auto" >
 <div id="cards" class="card-deck" style="height: 120px; width: 102%">
 
             <div class="card border-info mb-3" style="max-width: 540px; height: 100%">
@@ -190,25 +190,7 @@ input[type=date]{
                     </div>
                 </div>
             </div>
-            <div class="card border-warning mb-3" style="max-width: 540px; height: 100%">
-
-                 <div class="card-header bg-transparent border-warning ">Accidents futurs</div>
-
-
-                <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="{% static 'img/warning.svg' %}"  class="card-img img-responsive "  style="top:15%; left: 25%;height: 45px; width: 50px" alt="">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h2 class="card-text text-warning">64</h2>
-
-                            <p class="card-text"><small class="text-muted">Accidents prédits </small></p>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
+</div>
 
         </div>
     <br>
@@ -560,7 +542,7 @@ Highcharts.chart('causechart', {
 
         // Circular options
         center: ['50%', '88%'],
-        size: '150%',
+        size: '120%',
         startAngle: -100,
         endAngle: 100
     }]
@@ -687,7 +669,7 @@ Highcharts.chart('routechart', {
             format: '{point.label} '
         },
         center: ['50%', '88%'],
-        size: '170%',
+        size: '120%',
         startAngle: -100,
         endAngle: 100
     }],
