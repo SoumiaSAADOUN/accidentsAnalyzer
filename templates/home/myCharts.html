@@ -126,6 +126,7 @@ input[type=date]{
       <button type="submit" class="btn btn-dark" style="float: right; width: auto; font-size: 11px; margin-left: 10px">Soumettre</button>
 </form>
 </div>
+    <br>
     <div class="container-fluid">
 <div style="width: 80%; display: flex; margin-left: auto; margin-right: auto" >
 <div id="cards" class="card-deck" style="height: 120px; width: 102%">
@@ -133,10 +134,10 @@ input[type=date]{
             <div class="card border-info mb-3" style="max-width: 540px; height: 100%">
                 <div class="card-header bg-transparent border-info" >Nombre total d'accidents</div>
                 <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="{% static 'img/acc.png' %}"  class="card-img img-responsive" style="left: 10%" alt="">
+                    <div class="col-md-5">
+                        <img src="{% static 'img/acc.png' %}"  class="card-img img-responsive" style="left: 10%; top: 0%" alt="">
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card-body">
                             <h2 class="card-text text-info" style="padding-left: 10px;">{{ accidents }}</h2>
 
@@ -149,10 +150,10 @@ input[type=date]{
             <div class="card border-dark mb-3" style="max-width: 540px;height: 100%">
                 <div class="card-header bg-transparent border-dark">Nombre total de blessés</div>
                 <div class="row no-gutters">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                          <img src="{% static 'img/bless.png' %}"  class="card-img img-responsive" alt="">
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card-body">
                             <h2 class="card-text text-dark">{{ bless }}</h2>
 {#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
@@ -163,10 +164,10 @@ input[type=date]{
             <div class="card border-danger mb-3" style="max-width: 540px;height: 100%">
                  <div class="card-header bg-transparent border-danger ">Nombre total de décés</div>
                 <div class="row no-gutters">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                          <img src="{% static 'img/dec2.png' %}"  class="card-img img-responsive" alt="">
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card-body">
                             <h2 class="card-text text-danger">{{ dec }}</h2>
 {#                            <p class="card-text"><small class="text-muted">Janvier-Mars 2014</small></p>#}
@@ -177,10 +178,10 @@ input[type=date]{
             <div class="card border-success mb-3" style="max-width: 540px; height: 100%">
                 <div class="card-header bg-transparent border-success ">Evolution des accidents</div>
                 <div class="row no-gutters">
-                    <div class="col-md-3">
-                        <img src="{% static 'img/evolution.png' %}"  class="card-img img-responsive"  style="left: 20%" alt="">
+                    <div class="col-md-4">
+                        <img src="{% static 'img/evolution.png' %}"  class="card-img img-responsive"  style="left: 20%; height: 50%; width: 65%" alt="">
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-8">
                         <div class="card-body">
                             <h2 class="card-text text-success">{{ evolution}} %</h2>
 

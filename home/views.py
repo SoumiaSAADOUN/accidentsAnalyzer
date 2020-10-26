@@ -237,59 +237,65 @@ def makeClusters(request):
     # m = folium.Map(location=[28.5, 1.5], zoom_start=5)
     m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
     m.add_child(fullscreen)
+    myEpsilon = request.POST.get('myEpsilon')
+    myMinPts = request.POST.get('myMinPts')
+    popup = Popup(width=80, show=False)
+    att = df[['longitude', 'latitude']]
+    dbscan_data = pd.DataFrame(att)
+    dbscan_data = dbscan_data.values.astype('float32', copy=False)
+    dbscan_data_scaler = StandardScaler().fit(dbscan_data)
+    dbscan_data = dbscan_data_scaler.transform(dbscan_data)
     if request.method == 'POST':
         formClus = clusteringform(request.POST)
+        model = DBSCAN(eps=float(myEpsilon), min_samples=float(myMinPts)).fit(dbscan_data)
     else:
         formClus = clusteringform()
-    myEpsilon = request.POST.get('myEpsilon')
+        model = DBSCAN(eps=0.02, min_samples=4).fit(dbscan_data)
+        # model = load('home/dbscan.joblib')
+        # silhouette = 0.642
+        # inxch = 57.086
+        # nbr_clusters = 263
+        # outliers = 152
+    silhouette = metrics.silhouette_score(dbscan_data, model.labels_)
+    inxch = metrics.calinski_harabasz_score(dbscan_data, model.labels_)
 
-    myMinPts  = request.POST.get('myMinPts')
 
-    popup =Popup(width=80, show=False)
 
-    if (myEpsilon == None):
-        model = load('home/dbscan.joblib')
-        silhouette= 0.642
-        inxch= 57.086
-        nbr_clusters= 263
-        outliers= 152
+    # if (myEpsilon == None):
+        # dbscan_data= pd.DataFrame(Accident.objects.values())
+        # dbscan_data =prepareData(df)
 
-        clusters_df = df[model.labels_ != -1]
-        clusters = Counter(model.labels_)
-        m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
-        m.add_child(fullscreen)
-        colors_array = cm.rainbow(np.linspace(0, 1, len(clusters)))
-        rainbow = [colors.rgb2hex(i) for i in colors_array]
-        for row in range(len(clusters_df)):
-            folium.vector_layers.CircleMarker(
-                [float(clusters_df.iloc[row]['latitude']), float(clusters_df.iloc[row]['longitude'])],
-                radius=5, fill=True, popup= ('Cause:', clusters_df.iloc[row]['cause_acc'], 'NBRE_Bless:', clusters_df.iloc[row]['nbre_bless']),
-                fill_opacity=1, color=random.choice(rainbow)).add_to(m)
+
+        # clusters_df = dbscan_data[model.labels_ != -1]
+        # clusters = Counter(model.labels_)
+        # m = folium.Map(location=[28.5, 2], zoom_start=5)
+        # # m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
+        # m.add_child(fullscreen)
+        # colors_array = cm.rainbow(np.linspace(0, 1, len(clusters)))
+        # rainbow = [colors.rgb2hex(i) for i in colors_array]
+        # for row in range(len(clusters_df)):
+        #     folium.vector_layers.CircleMarker(
+        #         [float(clusters_df.iloc[row]['latitude']), float(clusters_df.iloc[row]['longitude'])],
+        #         radius=5, fill=True, popup= ('Cause:', clusters_df.iloc[row]['cause_acc'], 'NBRE_Bless:', clusters_df.iloc[row]['nbre_bless']),
+        #         fill_opacity=1, color=random.choice(rainbow)).add_to(m)
         # m.save('clusters.html')
-    else:
-        att= df[['longitude','latitude']]
-        dbscan_data=pd.DataFrame(att)
-        dbscan_data = dbscan_data.values.astype('float32', copy=False)
-        dbscan_data_scaler = StandardScaler().fit(dbscan_data)
-        dbscan_data = dbscan_data_scaler.transform(dbscan_data)
-        model = DBSCAN(eps=float(myEpsilon), min_samples=float(myMinPts)).fit(dbscan_data)
-        silhouette= metrics.silhouette_score(dbscan_data, model.labels_)
-        inxch= metrics.calinski_harabasz_score(dbscan_data, model.labels_)
-        clusters_df = df[model.labels_ != -1]
-        a=False
-        core = model.core_sample_indices_
-        print(len(clusters_df))
-        clusters = Counter(model.labels_)
-        nbr_clusters= len(set(model.labels_)) - (-1 if -1 in model.labels_ else 0)
-        outliers= len(df[model.labels_==-1])
-        colors_array = cm.rainbow(np.linspace(0, 1, len(clusters)))
-        rainbow = [colors.rgb2hex(i) for i in colors_array]
+    # else:
 
-        for row in range(len(clusters_df)):
-            folium.vector_layers.CircleMarker(
-                [float(clusters_df.iloc[row]['latitude']), float(clusters_df.iloc[row]['longitude'])],
-                radius=8, fill=True, popup=('Cause:', clusters_df.iloc[row]['cause_acc'], 'Nbre_bless',clusters_df.iloc[row]['nbre_bless']),
-                fill_opacity=1, color=random.choice(rainbow)).add_to(m)
+    clusters_df = df[model.labels_ != -1]
+    a = False
+    core = model.core_sample_indices_
+    print(len(clusters_df))
+    clusters = Counter(model.labels_)
+    nbr_clusters = len(set(model.labels_)) - (-1 if -1 in model.labels_ else 0)
+    outliers = len(df[model.labels_ == -1])
+    colors_array = cm.rainbow(np.linspace(0, 1, len(clusters)))
+    rainbow = [colors.rgb2hex(i) for i in colors_array]
+    for row in range(len(clusters_df)):
+        folium.vector_layers.CircleMarker(
+            [float(clusters_df.iloc[row]['latitude']), float(clusters_df.iloc[row]['longitude'])],
+            radius=7, fill=True,
+            popup=('Cause:', clusters_df.iloc[row]['cause_acc'], 'Nbre_bless', clusters_df.iloc[row]['nbre_bless']),
+            fill_opacity=1, color=random.choice(rainbow)).add_to(m)
 
     m.add_to(fig)
     m = fig._repr_html_()  # updated
