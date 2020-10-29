@@ -365,7 +365,8 @@ def makePrediction (request):
         pred = pd.DataFrame(clf.predict(marsData)).rename(columns={0: "pred"}, errors="raise")
         result = proba.merge(pred, left_index=True, right_on=None, right_index=True)
         res = pd.concat([marsDataCopy, result], axis=1, join='inner')
-        res = res.loc[res['proba_1'] >=0.5]
+        res = res.loc[res['proba_1'] >=0.3]
+        res = (res.drop_duplicates(['latitude', 'longitude']))
         predictions = len(res)
         colors_array = cm.rainbow(np.linspace(0, 1, predictions))
         rainbow = [colors.rgb2hex(i) for i in colors_array]
