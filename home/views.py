@@ -306,8 +306,8 @@ def makePrediction (request):
         debut = request.POST.get('makePred-debutPred')
         fin = request.POST.get('makePred-finPred')
         if (fin>'2014-03-31'):
-            df = pd.DataFrame(predictionData.objects.values())
-            marsData= pd.DataFrame(columns=('date', 'heure', 'latitude','longitude', 'wilaya'))
+            df = pd.DataFrame(predictionData.objects.values('heure', 'latitude','longitude', 'wilaya'))
+            marsData= pd.DataFrame(columns=('heure', 'latitude','longitude', 'wilaya'))
             # predictionData = (df.drop_duplicates(['latitude', 'longitude']))
             # hours = [datetime.time(i, 0) for i in range(24)]
             # hours30 = [datetime.time(i, 30) for i in range(24)]
@@ -316,17 +316,22 @@ def makePrediction (request):
             # print(predictionData.iloc[4])
             for k in days:
                 print(k)
-                for i in range(len(df)):
-                    print(i)
-                    marsData = marsData.append({"date": k, "latitude": df.iloc[i]['latitude'],
-                                                  "longitude": df.iloc[i]['longitude'],
-                                                "heure": df.iloc[i]['heure'],
-                                                  "wilaya": df.iloc[i]['wilaya'], }, ignore_index=True)
+                df_copy= df
+                print(df_copy.head())
+                df_copy.insert(0, 'date', k)
+                print(df_copy.head())
+                marsData= marsData.append(df_copy)
+                print(marsData.head())
+                # for i in range(len(df)):
+                #     print(i)
+                #     marsData = marsData.append({"date": k, "latitude": df.iloc[i]['latitude'],
+                #                                   "longitude": df.iloc[i]['longitude'],
+                #                                 "heure": df.iloc[i]['heure'],
+                #                                   "wilaya": df.iloc[i]['wilaya'], }, ignore_index=True)
 
             print(marsData.head())
             marsDataCopy = marsData
-            marsData = prepareData(
-                pd.DataFrame(marsData).loc[:, pd.DataFrame(marsData).columns != 'wilaya'])
+            marsData = prepareData(pd.DataFrame(marsData).loc[:, pd.DataFrame(marsData).columns != 'wilaya'])
             # marsData = prepareData(marsData)
 
         else:
