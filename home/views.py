@@ -316,11 +316,16 @@ def makePrediction (request):
             # print(predictionData.iloc[4])
             for k in days:
                 print(k)
+                df_copy= pd.DataFrame()
+                # df_copy = df_copy.fillna(0)  # with 0s rather than NaNs
+                print(df_copy.head())
                 df_copy= df
                 print(df_copy.head())
-                df_copy.insert(0, 'date', k)
+                # df_copy.insert(0, 'date', k)
+                df_copy['date']= k
+                df_copy['date']= df_copy['date'].dt.date
                 print(df_copy.head())
-                marsData= marsData.append(df_copy)
+                marsData= marsData.append(df_copy, ignore_index=True)
                 print(marsData.head())
                 # for i in range(len(df)):
                 #     print(i)
@@ -365,9 +370,9 @@ def makePrediction (request):
         pred = pd.DataFrame(clf.predict(marsData)).rename(columns={0: "pred"}, errors="raise")
         result = proba.merge(pred, left_index=True, right_on=None, right_index=True)
         res = pd.concat([marsDataCopy, result], axis=1, join='inner')
-        res = res.loc[res['proba_1'] >=0.3]
-        res = (res.drop_duplicates(['latitude', 'longitude']))
-        predictions = len(res)
+        res = res.loc[res['proba_1'] >0.5]
+        res = (res.drop_duplicates(['latitude', 'longitude', 'date']))
+        predictions = len(res.loc[res['proba_1'] >0.5])
         colors_array = cm.rainbow(np.linspace(0, 1, predictions))
         rainbow = [colors.rgb2hex(i) for i in colors_array]
         for row in range(len(res)):
