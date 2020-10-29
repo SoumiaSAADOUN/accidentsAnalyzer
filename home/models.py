@@ -176,3 +176,16 @@ class Accident(models.Model):
     class Meta:
         managed = True
         db_table = 'Accident'
+
+
+class predictionData(models.Model):
+    wilaya = models.CharField(max_length=80, blank=True, null=True)
+    heure = models.TimeField(db_column='HEURE', blank=True, null=True)  # Field name made lowercase.
+    latitude = models.FloatField(db_column='Latitude', blank=True, null=True)  # Field name made lowercase.
+    longitude = models.FloatField(db_column='Longitude', blank=True, null=True)  # Field name made lowercase.
+    id = models.AutoField(primary_key=True)
+
+    class Meta:
+        managed = True
+        db_table = 'predictionData'
+

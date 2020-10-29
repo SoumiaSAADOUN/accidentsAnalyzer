@@ -231,10 +231,8 @@ def makeHeatmap(request, myRadius=15, myOpacity=0.8):
 # ----------------------------------------------------------------------------------------
 @login_required(login_url='authentif')
 def makeClusters(request):
-
     df=pd.DataFrame(Accident.objects.values('latitude','longitude','cause_acc','temperature','precipitation','nbre_bless', 'nbre_dec','age_chauff'))
     fig = folium.Figure()
-    # m = folium.Map(location=[28.5, 1.5], zoom_start=5)
     m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
     m.add_child(fullscreen)
     myEpsilon = request.POST.get('myEpsilon')
@@ -251,36 +249,9 @@ def makeClusters(request):
     else:
         formClus = clusteringform()
         model = DBSCAN(eps=0.02, min_samples=4).fit(dbscan_data)
-        # model = load('home/dbscan.joblib')
-        # silhouette = 0.642
-        # inxch = 57.086
-        # nbr_clusters = 263
-        # outliers = 152
+
     silhouette = metrics.silhouette_score(dbscan_data, model.labels_)
     inxch = metrics.calinski_harabasz_score(dbscan_data, model.labels_)
-
-
-
-    # if (myEpsilon == None):
-        # dbscan_data= pd.DataFrame(Accident.objects.values())
-        # dbscan_data =prepareData(df)
-
-
-        # clusters_df = dbscan_data[model.labels_ != -1]
-        # clusters = Counter(model.labels_)
-        # m = folium.Map(location=[28.5, 2], zoom_start=5)
-        # # m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
-        # m.add_child(fullscreen)
-        # colors_array = cm.rainbow(np.linspace(0, 1, len(clusters)))
-        # rainbow = [colors.rgb2hex(i) for i in colors_array]
-        # for row in range(len(clusters_df)):
-        #     folium.vector_layers.CircleMarker(
-        #         [float(clusters_df.iloc[row]['latitude']), float(clusters_df.iloc[row]['longitude'])],
-        #         radius=5, fill=True, popup= ('Cause:', clusters_df.iloc[row]['cause_acc'], 'NBRE_Bless:', clusters_df.iloc[row]['nbre_bless']),
-        #         fill_opacity=1, color=random.choice(rainbow)).add_to(m)
-        # m.save('clusters.html')
-    # else:
-
     clusters_df = df[model.labels_ != -1]
     a = False
     core = model.core_sample_indices_
@@ -307,10 +278,8 @@ def makeClusters(request):
 @login_required(login_url='authentif')
 def makePrediction (request):
     myfilter = intervalledate2(prefix='pred')
-    # list_pred= os.listdir('.\static\predictors\\')
-
     list_pred= list_files('.\static\predictors\\', "joblib")
-    # list_pred= glob.glob('.\static\predictors\*.joblib')
+
     f = folium.Figure(height=500)
     m = folium.Map(location=[28.5, 2], zoom_start=5, tiles=tilesServer, attr="openmaptiles-server")
     m.add_child(fullscreen)
@@ -318,6 +287,11 @@ def makePrediction (request):
     predictions=0
     total= 0
     res= pd.DataFrame()
+
+
+    # df.groupby(['latitude']).size().reset_index()
+    # print(len(predictionData))
+
 
     if request.method== 'POST' and 'predictors' in request.POST:
         model= ('.\static\\predictors\\'+ request.POST.get('theModel'))
@@ -331,37 +305,62 @@ def makePrediction (request):
 
         debut = request.POST.get('makePred-debutPred')
         fin = request.POST.get('makePred-finPred')
-        marsData = Accident.objects.filter(date__range=[debut, fin])
-        marsData = marsData.values(*lines)
+        if (fin>'2014-03-31'):
+            df = pd.DataFrame(predictionData.objects.values())
+            marsData= pd.DataFrame(columns=('date', 'heure', 'latitude','longitude', 'wilaya'))
+            # predictionData = (df.drop_duplicates(['latitude', 'longitude']))
+            # hours = [datetime.time(i, 0) for i in range(24)]
+            # hours30 = [datetime.time(i, 30) for i in range(24)]
+            # hours.extend(hours30)
+            days = pd.date_range(debut, fin).tolist()
+            # print(predictionData.iloc[4])
+            for k in days:
+                print(k)
+                for i in range(len(df)):
+                    print(i)
+                    marsData = marsData.append({"date": k, "latitude": df.iloc[i]['latitude'],
+                                                  "longitude": df.iloc[i]['longitude'],
+                                                "heure": df.iloc[i]['heure'],
+                                                  "wilaya": df.iloc[i]['wilaya'], }, ignore_index=True)
 
-        futurePred= pd.DataFrame(Accident.objects.values(*lines))[lines[1]].unique()
-        # print(futurePred)
+            print(marsData.head())
+            marsDataCopy = marsData
+            marsData = prepareData(
+                pd.DataFrame(marsData).loc[:, pd.DataFrame(marsData).columns != 'wilaya'])
+            # marsData = prepareData(marsData)
 
-        if 'heure' not in lines:
-            lines.append('heure')
-        if 'date' not in lines:
-            lines.append('date')
-        if 'wilaya' not in lines:
-            lines.append('wilaya')
-        if 'latitude' not in lines:
-            lines.append('latitude')
-        if 'longitude' not in lines:
-            lines.append('longitude')
-
-        # marsData = marsData.values('longitude', 'latitude', 'age_chauff', 'annee_permis', 'heure', 'cause_acc',
-        #                            'date_naiss_chauff', 'date', 'wilaya')
-        marsDataCopy = Accident.objects.filter(date__range=[debut, fin])
-        marsDataCopy = pd.DataFrame(marsDataCopy.values(*lines))
-
-        if 'accident' in attributs:
-            marsData = prepareData(pd.DataFrame(marsData).loc[:, pd.DataFrame(marsData).columns != 'accident'])
         else:
-            marsData = prepareData(pd.DataFrame(marsData))
+            marsData = Accident.objects.filter(date__range=[debut, fin])
+            marsData = marsData.values(*lines)
+            futurePred = pd.DataFrame(Accident.objects.values(*lines))[lines[1]].unique()
+            # print(futurePred)
+
+            if 'heure' not in lines:
+                lines.append('heure')
+            if 'date' not in lines:
+                lines.append('date')
+            if 'wilaya' not in lines:
+                lines.append('wilaya')
+            if 'latitude' not in lines:
+                lines.append('latitude')
+            if 'longitude' not in lines:
+                lines.append('longitude')
+
+            # marsData = marsData.values('longitude', 'latitude', 'age_chauff', 'annee_permis', 'heure', 'cause_acc',
+            #                            'date_naiss_chauff', 'date', 'wilaya')
+            marsDataCopy = Accident.objects.filter(date__range=[debut, fin])
+            marsDataCopy = pd.DataFrame(marsDataCopy.values(*lines))
+
+            if 'accident' in attributs:
+                marsData = prepareData(pd.DataFrame(marsData).loc[:, pd.DataFrame(marsData).columns != 'accident'])
+            else:
+                marsData = prepareData(pd.DataFrame(marsData))
         predMars = clf.predict(marsData)
         proba = pd.DataFrame(clf.predict_proba(marsData)).rename(columns={0: "proba_0", 1: "proba_1"}, errors="raise")
         pred = pd.DataFrame(clf.predict(marsData)).rename(columns={0: "pred"}, errors="raise")
         result = proba.merge(pred, left_index=True, right_on=None, right_index=True)
         res = pd.concat([marsDataCopy, result], axis=1, join='inner')
+        res = res.loc[res['proba_1'] >=0.5]
         predictions = len(res)
         colors_array = cm.rainbow(np.linspace(0, 1, predictions))
         rainbow = [colors.rgb2hex(i) for i in colors_array]
